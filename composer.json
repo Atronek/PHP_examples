@@ -1,0 +1,152 @@
+{
+	"name": "nette/sandbox",
+	"description": "The sandbox is a pre-packaged Nette Framework project, basic configured structure for your application.",
+	"homepage": "https://nette.org",
+	"type": "project",
+	"license": ["BSD-3-Clause", "GPL-2.0", "GPL-3.0"],
+	"authors": [
+		{
+			"name": "David Grudl",
+			"homepage": "https://davidgrudl.com"
+		},
+		{
+			"name": "Nette Community",
+			"homepage": "https://nette.org/contributors"
+		}
+	],
+	"require": {
+		"php": ">=5.6.0",
+		"nette/application": "^2.4.4",
+		"nette/bootstrap": "^2.4.3",
+		"nette/caching": "^2.5",
+		"nette/database": "^2.4",
+		"nette/di": "^2.4",
+		"nette/finder": "^2.4",
+		"nette/forms": "^2.4",
+		"nette/http": "^2.4",
+		"nette/mail": "^2.4",
+		"nette/robot-loader": "^2.4",
+		"nette/safe-stream": "^2.3",
+		"nette/security": "^2.4",
+		"nette/utils": "^2.4",
+		"latte/latte": "^2.4",
+		"tracy/tracy": "*",
+		"dg/adminer-custom": "^1.9",
+		"kdyby/doctrine": "^3.3",
+		"kdyby/translation": "^2.5",
+		"ublaboo/datagrid": "^5.7.1",
+		"indaxia/doctrine-orm-transformations": "2.*",
+		"kdyby/forms-replicator": "^1.4.0",
+		"blueimp/jquery-file-upload": "^10.1",
+		"icewind/smb": "^3.1",
+		"koolreport/amazing": "^1.1",
+		"koolreport/bootstrap4": "dev-master",
+		"koolreport/cache": "dev-master",
+		"koolreport/cleandata": "dev-master",
+		"koolreport/cloudexport": "^2.0",
+		"koolreport/codeigniter": "dev-master",
+		"koolreport/core": "dev-master",
+		"koolreport/cube": "^2.2",
+		"koolreport/d3": "^1.0",
+		"koolreport/datagrid": "^3.2",
+		"koolreport/drilldown": "^3.0",
+		"koolreport/excel": "^7.0",
+		"koolreport/export": "^4.0",
+		"koolreport/chartjs": "^2.1",
+		"koolreport/inputs": "^5.0",
+		"koolreport/instant": "dev-master",
+		"koolreport/laravel": "dev-master",
+		"koolreport/morris_chart": "^2.2",
+		"koolreport/pivot": "^6.2",
+		"koolreport/querybuilder": "dev-master",
+		"koolreport/sparklines": "^1.5",
+		"koolreport/statistics": "dev-master",
+		"alnux/nette-breadcrumb": "dev-master",
+		"aspera/xlsx-reader": "dev-master",
+		"doctrine/common": "^2.13.1",
+		"tprochazka/restful": "0.8",
+		"cweagans/composer-patches": "^1.7",
+		"isigar/oauth2": "^1.1",
+		"kdyby/redis": "*",
+		"pmill/doctrine-array-hydrator": "^0.1.7",
+		"contributte/flysystem": "*",
+		"league/flysystem": "2.5.0 as 1.1.10",
+		"league/flysystem-sftp": "*",
+		"nettrine/extensions": "^0.3.1",
+		"mk-j/php_xlsxwriter": "^0.38.0",
+		"contributte/pdf": "*",
+		"mpdf/qrcode": "^1.2",
+		"symfony/serializer": "*",
+		"symfony/property-info": "*",
+		"balping/json-raw-encoder": "^1.0",
+		"radekdostal/nette-datetimepicker": "*",
+		"nicoswd/php-rule-parser": "^0.6.1",
+		"nette/schema": "^1.2",
+		"nasext/dependent-select-box": "3.1.4",
+		"psr/http-client": "^1.0",
+		"php-http/discovery": "^1.18",
+		"guzzlehttp/guzzle": "^7.7",
+		"php-http/message-factory": "^1.1",
+		"obray/ipp": "dev-master",
+		"support-site/cups-ipp": "dev-master",
+		"flexydigital/key-value-store": "dev-master",
+		"mjaschen/phpgeo": "^4.2",
+		"contributte/forms-multiplier": "^3.3"
+	},
+	"require-dev": {
+		"nette/tester": "^2.0",
+		"netpromotion/profiler": "^1.3"
+	},
+	"minimum-stability": "dev",
+	"prefer-stable": true,
+	"config": {
+		"platform": {
+			"php": "7.4"
+		},
+		"allow-plugins": {
+			"cweagans/composer-patches": true,
+			"php-http/discovery": true
+		},
+		"apcu-autoloader": true,
+		"optimize-autoloader": true
+	},
+    "extra": {
+        "composer-exit-on-patch-failure": true,
+        "patches": {
+            "kdyby/doctrine": {
+                "Incompatible with doctrine/dbal 2.11.0 #336": "patches/kdyby-doctrine-336-dbal-2.11.0-compatibility.patch"
+            }
+        }
+    },
+	"repositories": {
+		"tprochazka/restful": {
+			"type": "vcs",
+			"url": "https://github.com/residit/Restful",
+			"no-api": true
+		},
+		"kdyby/doctrine": {
+			"type": "vcs",
+			"url": "https://github.com/dek-cz/Doctrine",
+			"no-api": true
+		},
+		"koolreport": {
+			"type": "composer",
+			"url": "https://repo.koolreport.com"
+		},
+		"doctrine/key-value-store": {
+	    "type" : "vcs",
+	    "url" : "https://github.com/blondak/KeyValueStore",
+	    "no-api" : true
+	},
+		"smalot/cups-ipp": {
+            "type" : "vcs",
+            "url" : "https://github.com/fall1600/cups-ipp",
+            "no-api" : true
+        }
+	},
+	"autoload": {
+		"classmap": [
+			"app/bootstrap.php"
+		]
+	}
+}
