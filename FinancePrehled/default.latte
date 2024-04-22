@@ -1,0 +1,462 @@
+{block head}
+    <link href="{$basePath}/css/datagrid.css" rel="stylesheet">    
+    <link href="{$basePath}/css/datagrid-spinners.css" rel="stylesheet">  
+    <style>
+        label {
+            cursor: pointer;
+            /* Style as you please, it will become the visible UI component. */
+        }
+ 
+        input[name="fileUpload"] {
+            opacity: 0;
+            position: absolute;
+            z-index: -1;
+        }
+
+        .col-katalogovyNazevVydaje{
+            min-width: 300px;
+        }
+
+        .col-nazev{
+            max-width: 500px;
+            overflow-wrap: break-word;
+        }
+
+        .col-mnozstvi, .col-jednotka{
+            max-width: 75px;
+        }
+
+        .col-stav{
+        }
+
+        .col-cenaKonecna, .col-aktualniFakturace, .col-mesicniSpotreba{
+            max-width: 100px;
+        }
+
+        .col-zaznamPriloha{
+            max-width: 200px;
+            overflow-wrap: break-word;
+        }
+
+        .col-checkbox{
+            min-width: 50px;
+        }
+
+        .datagrid{
+            overflow: auto;
+        }
+
+
+        [type="checkbox"]:not(:checked), [type="checkbox"]:checked {
+            position: inherit;
+            left: inherit;
+            opacity: inherit;
+        }
+
+        .tlacitka button, .tlacitka a{
+            padding: 5px;
+            border-radius: 5px;
+            margin: 2px;
+            margin-bottom: 4px;
+        }
+
+        .btn-nevyraz{
+            background-color:#696969;
+            border-color:#696969;
+            line-height: 1.5;
+        }
+
+        td.col-objednavka{
+            text-align:center;
+        }
+
+        .rohy-kul{
+            text-align:center;
+            border-radius:10px;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        .zluta{
+            background-color: #f2e307;
+        }
+
+        .zelena{
+            background-color: #00ff55;
+        }
+
+        .pdTpBt{
+            font-weight: bolder;
+            padding-top: 2px;
+            padding-bottom: 2px;
+        }
+
+        .myBadge{
+            position: relative;
+            top: -8px;
+            margin-left: 10px;
+        }
+        .modal {
+            display: block;
+        }
+        .form-row {
+            width: 100%;
+            margin: 7px;
+        }
+        .form-row select, .form-row input {
+            padding: 7px;
+            border: 1px solid #ccc;
+            border-radius: 0.2rem;
+            width: 100% !important;
+        }
+        .form-row label {
+            margin-bottom: 3px;
+        }
+
+        .form-row .btn-primary {
+            margin: 0 !important;
+        }
+
+        .oodel-odkazy {
+            position: fixed;
+            bottom: 0;
+            background: #f4f6f9;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .btn-nevyraz{
+            background-color:#696969;
+            border-color:#696969;
+        }
+
+        .tlacitka a{
+            padding: 10px;
+            border-radius: 5px;
+            margin: 2px;
+            margin-bottom: 10px;
+        }
+        
+</style>  
+
+{/block}
+{block content}
+    {snippet pridatDoKatalogu}
+        {if $pridatDoKatalogu}
+            <div class="modal falde" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" id="modalPridatDoKatalogu">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            {block secondModalHeader}
+                                <h3 class="modal-title">
+                                    {block|striptags}<h2>{_finance.pridatDoKatalogu}</h2>{/block}
+                                </h3>
+                            {/block}
+                        </div>
+                        <div class="modal-body">
+                            {form addToKatalogForm class => "form-inline"} 
+                                {foreach $form->controls as $name => $field}
+                                        <div class="form-row bd-highlight no-gutters">
+                                            {label $name class => "mr-2" /}
+                                            {input $name}
+                                        </div>
+                                {/foreach}
+                                <div class="form-row bd-highlight no-gutters">
+                                    <a n:href="FinancePrehled:" class="btn btn-danger mb-2 mr-sm-2 col-12">{_finance.zavrit}</a>                                
+                                </div>
+                            {/form}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-backdrop show"></div>
+        {/if}
+    {/snippet}
+{snippet content}
+<div class="container-fluid mx-0 bg-white border ">
+
+{if $denikVytvoreny == true}
+<div class = "row  mt-3">
+
+        <div class="col-5 tlacitka">
+            <h1 style="display: inline">{_finance.plan} {$datum} </h1>  
+            {if $zamceno}
+                <h2 style="display: inline"><span class="myBadge badge badge-pill badge-danger">{_messages.zamceno}</span></h2>
+            {else}
+                <h2 style="display: inline"><span class="myBadge badge badge-pill badge-success">{_messages.odemceno}</span></h2>
+            {/if}
+
+            <br>
+            
+                {if ($user->isInRole('pps_financni_plan_zamek'))}
+                    {if $zamceno == 1}
+                        <button name="lock" class="btn-primary" style="background-color:#ff9933;border-color:#ff9933"><i class="fa fa-unlock" aria-hidden="true"></i> {$stavDeniku}</button>
+                    {else}
+                        <button name="lock" class="btn-primary" style="background-color:#33cc33;border-color:#33cc33"><i class="fa fa-lock" aria-hidden="true"></i> {$stavDeniku}</button>
+                    {/if}
+                    {if $zamceno == 1}
+                    <button id="notifikace" class="btn-primary"><span style="background-color:#ef5350;border-radius:15px">&nbsp;<i class="fa fa-bell" aria-hidden="true">&nbsp;</i></span>{_finance.odeslatNotifikaci}</button>
+                    {/if}
+                    <br>
+                    <button id="exportCSV" class="btn-primary clsPrldr btn-nevyraz">{_finance.exportCSV}</button>
+                    
+                {/if}
+                {if ($user->isInRole('pps_financni_plan_export'))}
+                    <button id="exportCSVmeho" class="btn-primary clsPrldr btn-nevyraz">{_finance.exportCSVDeniku}</button>
+                    <br>
+                {/if}
+
+                <div class="container row mt-2 mb-3">
+                    {if $editor}
+                        <div class="tlacitka mr-1">
+                            <a id="vyhledaniVHistoriiRedir" class="btn-primary clsPrldr btn-nevyraz" style="padding: 0.5rem;" n:href="FinancePrehledVyhledani:">{_finance.vyhledatVHistorii}</a>
+                        </div>
+                        {* <button id="vyhledaniRedir" class="btn-primary clsPrldr btn-nevyraz">{_finance.vyhledatVHistorii}</button> *}
+                    {/if}
+                    {if $prava["Edit"]}
+                        <div class="tlacitka mr-1">
+                            <a id="katalogRedir" class="btn-primary clsPrldr btn-nevyraz" style="padding: 0.5rem;" n:href="FinanceDenniPrehledKatalog: $typDeniku">{_finance.vyhledatVKatalogu}</a>
+                        </div>                
+                    {/if}
+                    {if ($prava["Edit"] || $prava["Schval"])}
+                    <div class="tlacitka mr-3">
+                        <a id="NevyzvednuteRedir" class="btn-primary clsPrldr btn-nevyraz" n:href="FinanceDenniPrehledNevyzvednute:">{_finance.nevyzvednute}</a>
+                    </div>
+                    {/if}
+                </div>
+            
+        </div>
+         <div class="col-7">
+            {form formSelect class => "form-inline"}         
+                <table class=> 
+                    <tr n:foreach="$form->controls as $name => $field">    
+                        <div class="input-group mb-2 ml-2 mr-sm-2">
+                            <div class="input-group-prepend">
+                                    {label $name class => "mr-2" /}
+                                    {input $name}
+                            </div>    
+                        </div>
+                        </tr>
+                    </table>
+            {/form}
+        </div>  
+    </div>
+    
+    <div n:snippet="itemsContainer">
+        <h2>Shrnutí všech oddílů</h2>
+            <div class="row">
+                <div class="col">
+                    <div class="card bg-light" >
+                        <div class="card-body">
+                            <h3 class="card-title">{_finance.celkovaCenaMesicnihoPlanu}:</h3>
+                            <h3 class="card-text">{$cenaKonecna} {_finance.KC}</h3>
+                        </div>
+                    </div>  
+                </div>
+                <div class="col">
+                    <div class="card bg-light" >
+                        <div class="card-body">
+                            <h3 class="card-title">{_finance.cenaObjednanychMesicnihoPlanu}:</h3>
+                            <h3 class="card-text">{$cenaKonecnaObjednane} {_finance.KC}</h3>
+                        </div>
+                    </div>  
+                </div>
+                <div class="col">
+                    <div class="card bg-light" >
+                        <div class="card-body">
+                            <h3 class="card-title">{_finance.cenaMehoMesicnihoPlanu}:</h3>
+                            <h3 class="card-text">{$cenaKonecnaVidene} {_finance.KC}</h3>
+                        </div>
+                    </div>  
+                </div>
+                <div class="col">
+                    <div class="card bg-light" >
+                        <div class="card-body">
+                            <h3 class="card-title">{_finance.cenaObjednanychMehoMesicnihoPlanu}:</h3>
+                            <h3 class="card-text">{$cenaKonecnaVideneObjednane} KČ</h3>
+                        </div>
+                    </div>  
+                </div>
+            </div>     
+        
+        {snippet tabulky}
+            {foreach $typyFinance as $key => $value}
+                {if false || in_array($key, $prava["All"])}
+                    <h2 id="{$key}">{$value}</h2>
+                    {control "financePrehledGrid-$key"}
+                {/if}
+            {/foreach}
+        {/snippet}
+        
+    </div>
+{/if}
+{if $denikVytvoreny == false}
+    <div class = "row  mt-3">
+        
+            <div class="col-5">
+                <h1>Deník: {$datum}</h1> 
+            </div>
+            <div class="col-7">
+                {form formSelect class => "form-inline"}         
+                    <table class=> 
+                        <tr n:foreach="$form->controls as $name => $field">    
+                            <div class="input-group mb-2 ml-2 mr-sm-2">
+                                <div class="input-group-prepend">
+                                        {label $name class => "mr-2" /}
+                                        {input $name}
+                                </div>    
+                            </div>
+                            </tr>
+                        </table>
+                {/form}
+            </div>  
+    </div>
+    <div class="alert alert-warning" role="alert">
+        <h4 class="alert-heading">{_finance.upozorneni}</h4>
+        <p>{_finance.planNeexistuje}</p>
+        <hr>
+        <!-- TODO práva -->
+        <p class="mb-0"><button class="btn-primary " id="createDenik">{_finance.vytvoritPlan}</button></p> 
+        <!-- TODO /práva -->
+    </div>
+{/if}
+</div>
+{/snippet}
+    <div class="oodel-odkazy row">
+        {foreach array_unique($prava["All"]) as $id}
+            {var $key = $id}
+            {var $value = $typyFinance[$key]}
+            <div class="tlacitka m-1">
+                <a class="btn-primary clsPrldr btn-nevyraz" href="#{$id}">
+                    {$value}
+                    {if in_array($key, $prava["Nakup"])}<span class="label label-rouded label-danger label-footer"></span>{/if}
+                </a>
+            </div>
+        {/foreach}
+    </div>
+{/block}
+
+{block scripts}
+
+    <script src="{$basePath}/js/datagrid.js"></script>
+    <script src="{$basePath}/js/datagrid-instant-url-refresh.js"></script>
+    <script src="{$basePath}/js/datagrid-spinners.js"></script>
+    <script src="{$basePath}/js/maintain-scroll.js"></script>
+
+    <script> 
+        $(document).ready(function(){
+
+            $( '[name = "lock"]' ).click(function() {
+                var handleLink = {$presenter->link('zmenitStavDeniku!',["zamknout"])};
+
+                
+                handleLink = handleLink.replace("zamknout", {$stavDeniku});
+
+
+                $.nette.ajax({
+                    'url': handleLink
+                });
+                
+            }) 
+            $( '#createDenik' ).click(function() {
+                var handleLink = {$presenter->link('vytvorDenik!',["datum"])};
+                
+                handleLink = handleLink.replace("datum", {$datum});
+
+
+                $.nette.ajax({
+                    'url': handleLink
+                });
+                
+            }) 
+        
+            $('#exportCSV').click(function() {
+                var handleLink = {$presenter->link('ExportCSV!',[0])};
+                
+                //handleLink = handleLink.replace("meho", 0);
+
+                document.location = handleLink;
+
+                
+                
+            })
+
+            $('#exportCSVmeho').click(function() {
+                var handleLink = {$presenter->link('ExportCSV!',[1])};
+                
+                //handleLink = handleLink.replace("meho", 1);
+
+                document.location = handleLink;
+
+                
+                
+            })
+
+            $('#notifikace').click(function() {
+                var handleLink = {$presenter->link('odeslatNotifikaci!')};
+
+                document.location = handleLink;
+
+            })
+
+            $('#vyhledaniRedir').click(function() {
+                var handleLink = {$presenter->link("vyhledaniRedir!")};
+
+                document.location = handleLink;
+            })
+
+            $('[name = "mesic"]').datepicker({
+                language: 'cs',
+                format: "mm.yyyy",
+                viewMode: "months", 
+                minViewMode: "months"
+            })
+            
+            
+            $('[name ="fileUpload"]').change(function(){
+                var handleLink = {$presenter->link('uploadFile!',["file","zaznamId"])};
+                console.log(this.files[0])
+                handleLink = handleLink.replace("file", this.files[0]);
+                handleLink = handleLink.replace("zaznamId", $(this).attr("id"));
+                
+                var formData = new FormData();
+
+                // add assoc key values, this will be posts values
+                formData.append("file", this.files[0], this.files[0].name);
+                formData.append("upload_file", true);
+
+                $.nette.ajax({
+                    type: "POST",
+                    url: handleLink,
+                    
+                    async: true,
+                    data: formData,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                });
+                    
+            });
+            
+            if(sessionStorage.getItem("finPlanDenni-scroll-id") != undefined){
+                $("[data-id='" + sessionStorage.getItem("finPlanDenni-scroll-id") + "']")[0].scrollIntoView({ block: "center", inline: "end"});
+            }
+        })  
+    </script>
+
+    <script>
+        
+    </script>
+
+    <script>
+        $(".downPrldr").on("click", function() {
+                setTimeout(function() {
+                    $(".preloader").fadeOut();
+                }, 6000);
+        })
+    </script>
+
+
+
+
+{/block}
